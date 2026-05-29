@@ -1,0 +1,39 @@
+{
+  "intent": "structured_business_workflow",
+  "workflow": {
+    "intent": "structured_business_workflow",
+    "steps": [
+      {
+        "step_id": 1,
+        "tool_name": "summariser",
+        "description": "Summarise the provided context."
+      },
+      {
+        "step_id": 2,
+        "tool_name": "task_extractor",
+        "description": "Extract action items from the provided context."
+      },
+      {
+        "step_id": 3,
+        "tool_name": "priority_classifier",
+        "description": "Assign priority levels to extracted tasks."
+      },
+      {
+        "step_id": 4,
+        "tool_name": "plan_generator",
+        "description": "Create a short execution plan."
+      },
+      {
+        "step_id": 5,
+        "tool_name": "email_drafter",
+        "description": "Draft a professional follow-up email."
+      }
+    ]
+  },
+  "evaluation": {
+    "valid_json": true,
+    "all_tools_available": true,
+    "missing_fields": [],
+    "empty_outputs": []
+  }
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "name": "meeting_follow_up_workflow",
+    "user_request": "Summarise this meeting transcript, extract tasks, prioritise them, create a 3-day plan, and draft a follow-up email.",
+    "context": "Today we discussed the product launch. The testing phase is delayed. We need to review the documentation. Sarah should send the client update by Friday. The team must prepare the final launch checklist."
+  },
+  {
+    "name": "client_update_workflow",
+    "user_request": "Extract the main tasks, prioritise them, and draft a client update email.",
+    "context": "The client wants an update on the dashboard delivery. We need to complete the API review, prepare the demo notes, and send the revised timeline by Friday."
+  }
+]
