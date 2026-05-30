@@ -1,10 +1,11 @@
 import json
-from typing import Optional
+from typing import Optional, Tuple
 
 import requests
 from pydantic import ValidationError
 
 from app.schemas.workflow_schema import WorkflowPlan, WorkflowStep
+from app.schemas.result_schema import PlannerMetadata
 from app.core.planner import create_workflow_plan
 
 
@@ -97,13 +98,29 @@ def parse_llm_plan(raw_response: str) -> Optional[WorkflowPlan]:
         return None
 
 
-def create_llm_workflow_plan(user_request: str) -> WorkflowPlan:
+def create_llm_workflow_plan(user_request: str) -> Tuple[WorkflowPlan, PlannerMetadata]:
     prompt = build_llm_prompt(user_request)
     raw_response = call_ollama(prompt)
 
     if raw_response:
         llm_plan = parse_llm_plan(raw_response)
         if llm_plan and llm_plan.steps:
-            return llm_plan
+            return llm_plan, PlannerMetadata(
+                mode="ollama",
+                model=DEFAULT_MODEL,
+                llm_available=True,
+            )
 
-    return create_workflow_plan(user_request)
+        fallback_plan = create_workflow_plan(user_request)
+        return fallback_plan, PlannerMetadata(
+            mode="rule_based_fallback_invalid_llm_output",
+            model=DEFAULT_MODEL,
+            llm_available=True,
+        )
+
+    fallback_plan = create_workflow_plan(user_request)
+    return fallback_plan, PlannerMetadata(
+        mode="rule_based_fallback_ollama_unavailable",
+        model=DEFAULT_MODEL,
+        llm_available=False,
+    )
