@@ -17,8 +17,15 @@ class EvaluationResult(BaseModel):
     empty_outputs: List[str]
 
 
+class PlannerMetadata(BaseModel):
+    mode: str
+    model: str
+    llm_available: bool
+
+
 class WorkflowResult(BaseModel):
     intent: str
+    planner: PlannerMetadata
     workflow: WorkflowPlan
     results: List[StepResult]
     evaluation: EvaluationResult

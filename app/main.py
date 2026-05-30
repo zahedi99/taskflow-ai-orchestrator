@@ -35,13 +35,14 @@ def health_check():
 
 @app.post("/run-workflow", response_model=WorkflowResult)
 def run_workflow(request: WorkflowRequest):
-    workflow_plan = create_llm_workflow_plan(request.user_request)
+    workflow_plan, planner_metadata = create_llm_workflow_plan(request.user_request)
     results = execute_workflow(workflow_plan, request.context)
     evaluation = evaluate_workflow(workflow_plan, results)
 
     return WorkflowResult(
-        intent=workflow_plan.intent,
-        workflow=workflow_plan,
-        results=results,
-        evaluation=evaluation,
+    intent=workflow_plan.intent,
+    planner=planner_metadata,
+    workflow=workflow_plan,
+    results=results,
+    evaluation=evaluation,
     )
