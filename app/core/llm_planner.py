@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 import requests
 from pydantic import ValidationError
 
-from app.schemas.workflow_schema import WorkflowPlan, WorkflowStep
+from app.schemas.workflow_schema import WorkflowPlan
 from app.schemas.result_schema import PlannerMetadata
 from app.core.planner import create_workflow_plan
 
@@ -45,6 +45,8 @@ Rules:
 - step_id must start at 1 and increase by 1.
 - Include only tools that are relevant to the request.
 - If the request is unclear, include summariser as the fallback tool.
+- Do not wrap the JSON in markdown.
+- Do not add text before or after the JSON.
 
 User request:
 {user_request}
@@ -69,32 +71,72 @@ def call_ollama(prompt: str, model: str = DEFAULT_MODEL) -> Optional[str]:
         return None
 
 
+def strip_markdown_fences(raw_response: str) -> str:
+    cleaned = raw_response.strip()
+
+    if cleaned.startswith("```json"):
+        cleaned = cleaned.removeprefix("```json").strip()
+    elif cleaned.startswith("```"):
+        cleaned = cleaned.removeprefix("```").strip()
+
+    if cleaned.endswith("```"):
+        cleaned = cleaned.removesuffix("```").strip()
+
+    return cleaned
+
+
+def extract_json_object(raw_response: str) -> Optional[str]:
+    cleaned = strip_markdown_fences(raw_response)
+
+    start_index = cleaned.find("{")
+    if start_index == -1:
+        return None
+
+    brace_depth = 0
+    in_string = False
+    escape_next = False
+
+    for index in range(start_index, len(cleaned)):
+        char = cleaned[index]
+
+        if escape_next:
+            escape_next = False
+            continue
+
+        if char == "\\" and in_string:
+            escape_next = True
+            continue
+
+        if char == '"':
+            in_string = not in_string
+            continue
+
+        if in_string:
+            continue
+
+        if char == "{":
+            brace_depth += 1
+        elif char == "}":
+            brace_depth -= 1
+
+            if brace_depth == 0:
+                return cleaned[start_index : index + 1]
+
+    return None
+
+
 def parse_llm_plan(raw_response: str) -> Optional[WorkflowPlan]:
     try:
-        cleaned_response = raw_response.strip()
+        json_text = extract_json_object(raw_response)
 
-        if cleaned_response.startswith("```json"):
-            cleaned_response = cleaned_response.replace("```json", "").replace("```", "").strip()
-        elif cleaned_response.startswith("```"):
-            cleaned_response = cleaned_response.replace("```", "").strip()
+        if not json_text:
+            return None
 
-        parsed = json.loads(cleaned_response)
+        parsed = json.loads(json_text)
 
-        steps = [
-            WorkflowStep(
-                step_id=step["step_id"],
-                tool_name=step["tool_name"],
-                description=step["description"],
-            )
-            for step in parsed.get("steps", [])
-        ]
+        return WorkflowPlan.model_validate(parsed)
 
-        return WorkflowPlan(
-            intent=parsed.get("intent", "structured_business_workflow"),
-            steps=steps,
-        )
-
-    except (json.JSONDecodeError, KeyError, TypeError, ValidationError):
+    except (json.JSONDecodeError, TypeError, ValidationError):
         return None
 
 
@@ -104,6 +146,7 @@ def create_llm_workflow_plan(user_request: str) -> Tuple[WorkflowPlan, PlannerMe
 
     if raw_response:
         llm_plan = parse_llm_plan(raw_response)
+
         if llm_plan and llm_plan.steps:
             return llm_plan, PlannerMetadata(
                 mode="ollama",
