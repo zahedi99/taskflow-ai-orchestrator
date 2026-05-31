@@ -85,3 +85,10 @@ Example proof outputs are included in:
 examples/ollama_success_response.json
 examples/fallback_response.json
 ```
+
+## Evidence and Testing
+
+- Testing evidence: docs/testing.md
+- Ollama planner proof: docs/ollama_planner_proof.md
+- Successful Ollama example: examples/ollama_success_response.json
+- Fallback example: examples/fallback_response.json
