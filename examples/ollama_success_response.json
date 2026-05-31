@@ -1,0 +1,44 @@
+{
+  "intent": "structured_business_workflow",
+  "planner": {
+    "mode": "ollama",
+    "model": "llama3.2:1b",
+    "llm_available": true
+  },
+  "workflow": {
+    "intent": "structured_business_workflow",
+    "steps": [
+      {
+        "step_id": 1,
+        "tool_name": "summariser",
+        "description": "Summarise the provided context."
+      },
+      {
+        "step_id": 2,
+        "tool_name": "task_extractor",
+        "description": "Extract tasks from the meeting transcript."
+      },
+      {
+        "step_id": 3,
+        "tool_name": "priority_classifier",
+        "description": "Prioritise extracted tasks based on urgency and importance."
+      },
+      {
+        "step_id": 4,
+        "tool_name": "plan_generator",
+        "description": "Create a 3-day plan for the prioritised tasks."
+      },
+      {
+        "step_id": 5,
+        "tool_name": "email_drafter",
+        "description": "Draft a follow-up email summarising the 3-day plan and task status."
+      }
+    ]
+  },
+  "evaluation": {
+    "valid_json": true,
+    "all_tools_available": true,
+    "missing_fields": [],
+    "empty_outputs": []
+  }
+}

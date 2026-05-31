@@ -1,0 +1,24 @@
+{
+  "intent": "structured_business_workflow",
+  "planner": {
+    "mode": "rule_based_fallback_ollama_unavailable",
+    "model": "llama3.2:1b",
+    "llm_available": false
+  },
+  "workflow": {
+    "intent": "structured_business_workflow",
+    "steps": [
+      {
+        "step_id": 1,
+        "tool_name": "summariser",
+        "description": "Provide a general summary of the request."
+      }
+    ]
+  },
+  "evaluation": {
+    "valid_json": true,
+    "all_tools_available": true,
+    "missing_fields": [],
+    "empty_outputs": []
+  }
+}
