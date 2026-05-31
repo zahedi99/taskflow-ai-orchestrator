@@ -26,3 +26,8 @@ A user can provide a messy business request such as:
 
 ```text
 Summarise this meeting transcript, extract tasks, prioritise them, create a 3-day plan, and draft a follow-up email.
+## Demo UI
+
+TaskFlow includes a built-in FastAPI browser UI for testing workflow orchestration locally.
+
+![TaskFlow AI Orchestrator demo](docs/taskflow-ui-ollama-demo.png)
