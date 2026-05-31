@@ -1,94 +1,28 @@
-## Local LLM Planning with Ollama
+# TaskFlow AI Orchestrator
 
-TaskFlow supports local LLM-based workflow planning through Ollama. A user can provide a messy business request, and the system attempts to convert it into a structured workflow plan using a local model.
+TaskFlow AI Orchestrator is a clean-room LLM workflow automation API that converts messy business requests into structured, validated multi-step task plans.
 
-The current default local model is:
+It demonstrates practical AI workflow engineering using local LLM planning, schema validation, modular tool routing, workflow execution, and output evaluation.
 
-```text
-llama3.2:1b
-```
+## Core Features
 
-TaskFlow does not require paid cloud API access. If Ollama is unavailable or the model output cannot be parsed into the expected schema, the system safely falls back to the rule-based planner.
+- Local LLM workflow planning with Ollama
+- Rule-based fallback planner when the LLM is unavailable or returns invalid output
+- Pydantic schema validation for workflow plans and results
+- Modular tool execution pipeline
+- Built-in workflow evaluator
+- FastAPI API endpoints
+- Built-in browser demo UI
+- Pytest coverage for workflow and parser behaviour
+- Example proof outputs for successful Ollama mode and fallback mode
 
-### Planner Modes
+## Tech Stack
 
-The API response includes planner metadata so the user can see exactly how the workflow plan was generated.
+Python | FastAPI | Pydantic | Ollama | Local LLMs | Uvicorn | Pytest | HTML/CSS/JavaScript
 
-Example successful Ollama planning mode:
+## What TaskFlow Does
 
-```json
-{
-  "planner": {
-    "mode": "ollama",
-    "model": "llama3.2:1b",
-    "llm_available": true
-  }
-}
-```
-
-Example fallback mode when Ollama is unavailable:
-
-```json
-{
-  "planner": {
-    "mode": "rule_based_fallback_ollama_unavailable",
-    "model": "llama3.2:1b",
-    "llm_available": false
-  }
-}
-```
-
-This makes the system transparent: it clearly shows whether the workflow plan came from the local LLM or from the safe fallback planner.
-
-## Running with Ollama
-
-Install Ollama and pull the lightweight local model:
-
-```powershell
-ollama pull llama3.2:1b
-```
-
-Confirm Ollama is running:
-
-```powershell
-curl.exe http://localhost:11434/api/tags
-```
-
-Start the TaskFlow API:
-
-```powershell
-.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8001 --reload
-```
-
-Open the API docs:
+A user can provide a messy business request such as:
 
 ```text
-http://127.0.0.1:8001/docs
-```
-
-Or test from PowerShell:
-
-```powershell
-$body = @{
-  user_request = "Summarise this meeting transcript, extract tasks, prioritise them, create a 3-day plan, and draft a follow-up email."
-  context = "Today we discussed the product launch. The testing phase is delayed. We need to review the documentation. Sarah should send the client update by Friday. The team must prepare the final launch checklist."
-} | ConvertTo-Json
-
-$response = Invoke-RestMethod -Uri "http://127.0.0.1:8001/run-workflow" -Method Post -Body $body -ContentType "application/json"
-
-$response | ConvertTo-Json -Depth 10
-```
-
-Example proof outputs are included in:
-
-```text
-examples/ollama_success_response.json
-examples/fallback_response.json
-```
-
-## Evidence and Testing
-
-- Testing evidence: docs/testing.md
-- Ollama planner proof: docs/ollama_planner_proof.md
-- Successful Ollama example: examples/ollama_success_response.json
-- Fallback example: examples/fallback_response.json
+Summarise this meeting transcript, extract tasks, prioritise them, create a 3-day plan, and draft a follow-up email.
