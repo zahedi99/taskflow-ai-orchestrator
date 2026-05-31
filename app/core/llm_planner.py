@@ -10,7 +10,7 @@ from app.core.planner import create_workflow_plan
 
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
-DEFAULT_MODEL = "llama3.2"
+DEFAULT_MODEL = "llama3.2:1b"
 
 
 def build_llm_prompt(user_request: str) -> str:
