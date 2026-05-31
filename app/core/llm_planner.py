@@ -1,4 +1,5 @@
-import json
+﻿import json
+import os
 from typing import Optional, Tuple
 
 import requests
@@ -9,8 +10,8 @@ from app.schemas.result_schema import PlannerMetadata
 from app.core.planner import create_workflow_plan
 
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-DEFAULT_MODEL = "llama3.2:1b"
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
+DEFAULT_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:1b")
 
 
 def build_llm_prompt(user_request: str) -> str:
